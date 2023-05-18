@@ -90,16 +90,18 @@ Route::get('investor-count', [OurInvestorController::class, 'investor_count']);
 
 Route::get('monthly-blog-reader', [VisitorController::class, 'monthly_blog_reader']);
 
+
+// campaign start
 Route::post('campaign-overview-store', [CampaignController::class, 'campaign_overview']);
 Route::post('campaign-about-store', [CampaignController::class, 'campaign_about']);
 Route::post('campaign-update', [CampaignController::class, 'campaign_update']);
 Route::post('campaign-reward-store', [CampaignController::class, 'campaign_reward']);
 Route::post('faq-store', [CampaignController::class, 'faq']);
+// campaign end
 
 
 Route::post('user-register', [UserController::class, 'user_register']);
 Route::post('login', [UserController::class, 'login']);
 Route::group(['middleware' => ['auth:sanctum']], function (Request $request) {
-    // return $request->user();
     Route::get('logout', [UserController::class, 'logout']);
 });

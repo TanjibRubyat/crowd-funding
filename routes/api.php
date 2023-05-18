@@ -1,19 +1,20 @@
 <?php
 
+use Illuminate\Http\Request;
+use App\Models\HomeTopSlider;
+use App\Models\CampaignOverview;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\BlogController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\StoryController;
+use App\Http\Controllers\Api\OurTeamController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\VisitorController;
 use App\Http\Controllers\Api\CampaignController;
 use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\Api\HomeTopSliderController;
 use App\Http\Controllers\Api\OurInvestorController;
-use App\Http\Controllers\Api\OurTeamController;
 use App\Http\Controllers\Api\PossibilityController;
-use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\StoryController;
-use App\Http\Controllers\Api\VisitorController;
-use App\Models\CampaignOverview;
-use App\Models\HomeTopSlider;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\HomeTopSliderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,3 +95,11 @@ Route::post('campaign-about-store', [CampaignController::class, 'campaign_about'
 Route::post('campaign-update', [CampaignController::class, 'campaign_update']);
 Route::post('campaign-reward-store', [CampaignController::class, 'campaign_reward']);
 Route::post('faq-store', [CampaignController::class, 'faq']);
+
+
+Route::post('user-register', [UserController::class, 'user_register']);
+Route::post('login', [UserController::class, 'login']);
+// Route::group(['middleware' => ['auth:sanctum']], function (Request $request) {
+    // return $request->user();
+    Route::get('logout', [UserController::class, 'logout']);
+// });

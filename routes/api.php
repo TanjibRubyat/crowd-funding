@@ -99,7 +99,7 @@ Route::post('faq-store', [CampaignController::class, 'faq']);
 
 Route::post('user-register', [UserController::class, 'user_register']);
 Route::post('login', [UserController::class, 'login']);
-// Route::group(['middleware' => ['auth:sanctum']], function (Request $request) {
+Route::group(['middleware' => ['auth:sanctum']], function (Request $request) {
     // return $request->user();
     Route::get('logout', [UserController::class, 'logout']);
-// });
+});

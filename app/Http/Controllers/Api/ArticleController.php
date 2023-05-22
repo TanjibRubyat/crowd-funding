@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Blog;
-use App\Models\Visitor;
-use Illuminate\Http\Request;
-use App\Models\MontlyBlogReader;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Article;
+use Illuminate\Http\Request;
 
-class BlogController extends Controller
+class ArticleController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,12 +16,12 @@ class BlogController extends Controller
     public function index()
     {
         try {
-            $blog = Blog::orderBy('id', 'desc')->get();
-            if ($blog) {
+            $article = Article::orderBy('id', 'desc')->get();
+            if ($article) {
                 return response()->json([
                     'message' => 'success',
                     'status' => 200,
-                    'data' => $blog
+                    'data' => $article
                 ], 200);
             } else {
                 return response()->json([
@@ -59,24 +56,23 @@ class BlogController extends Controller
     public function store(Request $request)
     {
         try {
-            if (Auth::check() && Auth::user()->roles == 'admin') {
+            try {
                 if (isset($request->image)) {
                     $fileName = time() . '.' . $request->image->getClientOriginalExtension();
-                    $request->image->move(public_path('assets/images/blogs'), $fileName);
-                    $file_path = "assets/images/blogs/" . $fileName;
+                    $request->image->move(public_path('assets/images/article'), $fileName);
+                    $file_path = "assets/images/article/" . $fileName;
                 }
-                $blog = Blog::create([
+                $article = Article::create([
                     'title' => $request->title,
                     'description' => $request->description,
-                    'author' => $request->author,
                     'image' => $file_path
                 ]);
 
-                if ($blog) {
+                if ($article) {
                     return response()->json([
                         'message' => 'success',
                         'status' => 201,
-                        'data' => $blog
+                        'data' => $article
                     ], 201);
                 } else {
                     return response()->json([
@@ -84,17 +80,14 @@ class BlogController extends Controller
                         'status' => 500,
                     ], 500);
                 }
-            } else {
+            } catch (\Throwable $th) {
                 return response()->json([
-                    'message' => 'unauthenticated',
-                    'status' => 401
-                ]);
+                    'message' => $th->getMessage(),
+                    'status' => 500
+                ], 500);
             }
         } catch (\Throwable $th) {
-            return response()->json([
-                'message' => $th->getMessage(),
-                'status' => 500
-            ], 500);
+            //throw $th;
         }
     }
 
@@ -107,15 +100,12 @@ class BlogController extends Controller
     public function show($id)
     {
         if ($id) {
-            $blog = Blog::find($id);
-            if ($blog) {
-                $visitor = new MontlyBlogReader();
-                $visitor->monthly_blog_reader = 1;
-                $visitor->save();
+            $article = Article::find($id);
+            if ($article) {
                 return response()->json([
                     'message' => 'success',
                     'status' => 200,
-                    'data' => $blog
+                    'data' => $article
                 ], 200);
             } else {
                 return response()->json([
@@ -152,23 +142,22 @@ class BlogController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $update = Blog::find($id);
-            // dd($update);
+            $article = Article::find($id);
+            // dd($article);
             if (isset($request->image)) {
                 $fileName = time() . '.' . $request->image->getClientOriginalExtension();
-                $request->image->move(public_path('assets/images/blogs'), $fileName);
-                $file_path = "assets/images/blogs/" . $fileName;
+                $request->image->move(public_path('assets/images/article'), $fileName);
+                $file_path = "assets/images/article/" . $fileName;
             }
-            if ($update) {
-                $update->title = isset($request->title) ? $request->title : "";
-                $update->description = isset($request->description) ? $request->description : "";
-                $update->image = isset($file_path) ? $file_path : "";
-                $update->author = isset($request->author) ? $request->author : "";
-                $update->save();
+            if ($article) {
+                $article->title = isset($request->title) ? $request->title : "";
+                $article->description = isset($request->description) ? $request->description : "";
+                $article->image = isset($file_path) ? $file_path : "";
+                $article->save();
                 return response()->json([
                     'message' => 'updated',
                     'status' => 201,
-                    'data' => $update
+                    'data' => $article
                 ], 201);
             } else {
                 return response()->json([
@@ -193,9 +182,9 @@ class BlogController extends Controller
     public function destroy($id)
     {
         try {
-            $blog = Blog::find($id);
-            if ($blog) {
-                $delete = $blog->delete();
+            $article = Article::find($id);
+            if ($article) {
+                $delete = $article->delete();
                 if ($delete) {
                     return response()->json([
                         'message' => 'deleted',

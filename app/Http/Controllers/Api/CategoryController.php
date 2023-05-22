@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class CategoryController extends Controller
 {
@@ -16,7 +17,7 @@ class CategoryController extends Controller
     public function index()
     {
         try {
-            $category = Category::orderBy('id','desc')->get();
+            $category = Category::orderBy('id', 'desc')->get();
             if ($category) {
                 return response()->json([
                     'message' => 'success',
@@ -55,29 +56,37 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+
         try {
-            if (isset($request->image)) {
-                $fileName = time() . '.' . $request->image->getClientOriginalExtension();
-                $request->image->move(public_path('assets/images/category'), $fileName);
-                $file_path = "assets/images/category/" . $fileName;
-            }
-            $category = Category::create([
-                'name' => isset($request->name) ? $request->name : "",
-                'description' => isset($request->description) ? $request->description : "",
-                'image' => isset($file_path) ? $file_path : "",
-                'slug' => isset($request->slug) ? $request->slug : ""
-            ]);
-            if ($category) {
-                return response()->json([
-                    'message' => 'success',
-                    'status' => 201,
-                    'data' => $category
-                ], 201);
+            if (Auth::check() && Auth::user()->roles == 'admin') {
+                if (isset($request->image)) {
+                    $fileName = time() . '.' . $request->image->getClientOriginalExtension();
+                    $request->image->move(public_path('assets/images/category'), $fileName);
+                    $file_path = "assets/images/category/" . $fileName;
+                }
+                $category = Category::create([
+                    'name' => isset($request->name) ? $request->name : "",
+                    'description' => isset($request->description) ? $request->description : "",
+                    'image' => isset($file_path) ? $file_path : "",
+                    'slug' => isset($request->slug) ? $request->slug : ""
+                ]);
+                if ($category) {
+                    return response()->json([
+                        'message' => 'success',
+                        'status' => 201,
+                        'data' => $category
+                    ], 201);
+                } else {
+                    return response()->json([
+                        'message' => 'success',
+                        'status' => 500,
+                    ], 500);
+                }
             } else {
                 return response()->json([
-                    'message' => 'success',
-                    'status' => 500,
-                ], 500);
+                    'message' => 'unauthenticated',
+                    'status' => 401
+                ]);
             }
         } catch (\Throwable $th) {
             return response()->json([
@@ -204,6 +213,7 @@ class CategoryController extends Controller
      */
     public function destroy($slug)
     {
+        
         $category = Category::where('slug', $slug)->first();
         if ($category) {
             $delete = $category->delete();

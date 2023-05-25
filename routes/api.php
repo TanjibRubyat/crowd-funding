@@ -83,7 +83,7 @@ Route::get('monthly-blog-reader', [VisitorController::class, 'monthly_blog_reade
 // campaign start
 Route::post('campaign-about-store', [CampaignController::class, 'campaign_about']);
 Route::post('campaign-reward-store', [CampaignController::class, 'campaign_reward']);
-// campaign end
+// campaign  end
 
 Route::get('logout', [UserController::class, 'logout']);
 
